@@ -18,8 +18,45 @@ nur das Ziel und bewertet das spielbare Ergebnis.
 
 - WSL (Linux-Dateisystem, nicht `/mnt/c/...`)
 - Node.js und npm
-- Godot 4.7.2 als `godot` oder `godot4` im PATH (sonst `GODOT_BIN` in `.env`)
 - OpenCode: `npm install -g opencode-ai`
+- Godot 4.7.2 als Linux-Binary (siehe unten)
+
+## Godot 4.7.2 in WSL installieren
+
+Die Prüf- und Startskripte erwarten eine **Linux**-Binary. Eine Windows-`.exe`
+läuft zwar über WSL-Interop, ist aber langsamer und braucht einen Sonderweg.
+Am einfachsten installierst du die offizielle Linux-Binary nach `~/.local/bin`:
+
+```bash
+mkdir -p ~/.local/bin
+curl -L -o /tmp/godot.zip \
+  https://github.com/godotengine/godot/releases/download/4.7.2-stable/Godot_v4.7.2-stable_linux.x86_64.zip
+unzip -o /tmp/godot.zip -d /tmp/godot
+install -m 755 /tmp/godot/Godot_v4.7.2-stable_linux.x86_64 ~/.local/bin/godot
+godot --version   # muss 4.7.2.stable.official... ausgeben
+```
+
+`~/.local/bin` liegt in WSL standardmäßig im PATH. Falls nicht, ergänze in
+`~/.bashrc`:
+
+```bash
+export PATH="$HOME/.local/bin:$PATH"
+```
+
+**Alternative – abweichender Pfad:** Liegt Godot woanders (oder nutzt du die
+Windows-Binary), trage den absoluten Pfad in `.env` ein:
+
+```dotenv
+GODOT_BIN=/opt/godot/Godot_v4.7.2-stable_linux.x86_64
+```
+
+`tools/godot.sh` sucht in dieser Reihenfolge: `GODOT_BIN`, dann `godot`, dann
+`godot4` aus dem PATH. Für die Windows-Binary die `_console.exe` verwenden,
+sonst fehlt die Terminal-Ausgabe:
+
+```dotenv
+GODOT_BIN=/mnt/c/.../Godot_v4.7.2-stable_win64_console.exe
+```
 
 ## Erste Schritte
 

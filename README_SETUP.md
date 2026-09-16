@@ -28,7 +28,23 @@ OpenCode lässt sich aktuell per npm installieren:
 npm install -g opencode-ai
 ```
 
-Unter Windows empfiehlt OpenCode selbst WSL. Für Godot ist eine Linux-Binary in WSL am unkompliziertesten; unter Windows 11 kann die GUI über WSLg laufen. Wenn die Binary nicht `godot` oder `godot4` heißt, trage ihren absoluten Pfad in `.env` als `GODOT_BIN` ein.
+Unter Windows empfiehlt OpenCode selbst WSL. Für Godot ist eine Linux-Binary in
+WSL am unkompliziertesten; unter Windows 11 kann die GUI über WSLg laufen. Die
+Linux-Binary installierst du nach `~/.local/bin`:
+
+```bash
+mkdir -p ~/.local/bin
+curl -L -o /tmp/godot.zip \
+  https://github.com/godotengine/godot/releases/download/4.7.2-stable/Godot_v4.7.2-stable_linux.x86_64.zip
+unzip -o /tmp/godot.zip -d /tmp/godot
+install -m 755 /tmp/godot/Godot_v4.7.2-stable_linux.x86_64 ~/.local/bin/godot
+godot --version
+```
+
+Danach findet `tools/godot.sh` die Binary automatisch über den PATH. Nur wenn
+sie anders heißt oder woanders liegt, trage ihren absoluten Pfad in `.env` als
+`GODOT_BIN` ein; für die Windows-Binary die `_console.exe` verwenden. Details in
+`README.md`.
 
 ## 3. `.env` prüfen
 

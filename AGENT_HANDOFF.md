@@ -12,8 +12,13 @@
 
 Den ersten spielbaren Meilenstein aus `GAME_SPEC.md` vollständig implementieren und mit `./tools/check-project.sh` prüfen.
 
+## Prüfstand
+
+- `./tools/check-project.sh` ist ausführbar und läuft mit der nativen Linux-Binary erfolgreich durch (Import + 2 s Hauptszene).
+
 ## Bekannte Probleme
 
-- Keine bekannten Projektfehler.
-- Ein lokales Godot-4.7.2-Kommando muss in WSL als `godot`, `godot4` oder über `GODOT_BIN` verfügbar sein.
+- Godot 4.7.2 ist als Linux-Binary unter `~/.local/bin/godot` installiert und liegt im PATH; `GODOT_BIN` ist dafür nicht nötig.
+- Falls `.env` noch ein `GODOT_BIN` auf die Windows-Binary zeigt, dieses entfernen oder leer lassen, damit die native Binary genutzt wird.
+- `check-project.sh` setzt das Arbeitsverzeichnis statt `--path` zu übergeben. Das hält auch den Windows-Fallback (WSL-Interop) lauffähig.
 
