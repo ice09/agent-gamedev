@@ -1,0 +1,25 @@
+# Secrets
+.env
+.env.*
+!.env.example
+
+# Godot cache and generated files
+.godot/
+*.tmp
+*.log
+
+# OpenCode local/session data
+.opencode/cache/
+.opencode/storage/
+
+# OS/editor files
+.DS_Store
+Thumbs.db
+.vscode/
+.idea/
+
+# Exports/builds
+build/
+dist/
+exports/
+

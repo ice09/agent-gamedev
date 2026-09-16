@@ -1,0 +1,64 @@
+{
+  "$schema": "https://opencode.ai/config.json",
+  "model": "openrouter/deepseek/deepseek-v4.1-flash",
+  "small_model": "openrouter/deepseek/deepseek-v4-flash-0731",
+  "default_agent": "build",
+  "enabled_providers": ["openrouter"],
+  "share": "disabled",
+  "snapshot": true,
+  "subagent_depth": 1,
+  "provider": {
+    "openrouter": {
+      "options": {
+        "apiKey": "{env:OPENROUTER_API_KEY}"
+      },
+      "models": {
+        "deepseek/deepseek-v4.1-flash": {},
+        "deepseek/deepseek-v4-flash-0731": {}
+      }
+    }
+  },
+  "permission": {
+    "read": {
+      "*": "allow",
+      ".env": "deny",
+      "*.env": "deny",
+      "*.env.*": "deny",
+      ".env.example": "allow",
+      "*.env.example": "allow"
+    },
+    "edit": {
+      "*": "allow",
+      ".env": "deny",
+      "*.env": "deny",
+      "*.env.*": "deny",
+      ".env.example": "allow",
+      "*.env.example": "allow"
+    },
+    "bash": {
+      "*": "ask",
+      "./tools/godot.sh *": "allow",
+      "./tools/check-project.sh": "allow",
+      "git status*": "allow",
+      "git diff*": "allow",
+      "git log*": "allow",
+      "git add*": "ask",
+      "git commit*": "ask",
+      "git push*": "deny",
+      "git reset --hard*": "deny",
+      "git clean*": "deny",
+      "rm -rf*": "deny"
+    },
+    "task": {
+      "*": "ask",
+      "cheap-worker": "allow",
+      "reviewer": "allow"
+    },
+    "skill": "allow",
+    "external_directory": "deny",
+    "doom_loop": "ask",
+    "webfetch": "ask",
+    "websearch": "ask"
+  }
+}
+
