@@ -1,101 +1,101 @@
-# Agent Game
+# Godot-Spiel mit KI-Agent bauen – Starter-Template
 
-Ein kleines Experiment: Ein vollständiges 2D-Spiel in Godot, das ein KI-Agent
-(OpenCode über OpenRouter) im Repository selbst umsetzt. Der Mensch formuliert
-nur das Ziel und bewertet das spielbare Ergebnis.
+Dieses Repository ist eine Vorlage, mit der du ein komplettes 2D-Godot-Spiel
+in drei Iterationen baust – zusammen mit einem KI-Coding-Agenten (z. B.
+OpenCode) und einem Chatmodell (z. B. ChatGPT) für Artwork. Der Mensch
+formuliert Ziele und bewertet das spielbare Ergebnis, der Agent setzt direkt
+im Repository um.
 
-## Idee
+Als lauffähiges Beispiel liegt das Cyberpunk-Jump-&-Run **Signal Infestation**
+bei (`dist/level1/`): Laufen, Springen, Zielen und Schießen, acht Gegner,
+Boss, Punkte, Pause und Neustart.
 
-- `GAME_SPEC.md` beschreibt verbindlich, was das Spiel können soll.
-- `AGENTS.md` beschreibt, wie der Agent arbeiten soll.
-- Der Agent legt Szenen, Skripte und Daten selbst an, prüft sie und pflegt
-  `AGENT_HANDOFF.md`.
-- Der erste Meilenstein ist bewusst klein: WASD-Bewegung, Sammelobjekte,
-  Punktestand, Gefahren, Game Over, Neustart – nur Godot-Primitiven, keine
-  externen Assets.
+![Signal Infestation: Spielfigur mit violetten Akzenten auf einer Wartungsplattform, davor ein sechsläufiger Schienenbeißer, rechts eine Augenqualle](docs/images/signal-infestation-gameplay.png)
 
-## Voraussetzungen
+> **Anleitung im Browser:** Von WSL-Setup bis 1. Iteration –
+> [Begleit-Website](https://orchid-mirage-rpab.here.now/) (lokal: `./start-website.sh`).
 
-- WSL (Linux-Dateisystem, nicht `/mnt/c/...`)
-- Node.js und npm
-- OpenCode: `npm install -g opencode-ai`
-- Godot 4.7.2 als Linux-Binary (siehe unten)
+## Der Flow in drei Iterationen
 
-## Godot 4.7.2 in WSL installieren
+| Schritt | Ordner | Inhalt |
+| --- | --- | --- |
+| 1. Art-Grundlage | `1st_iter/` | Charakter-Referenzen, Palette, Art-Direction, Environment-Prompt, Produktionsordner |
+| 2. Spielbar machen | `2nd_iter/` | Gameplay-Brief (`GAMEPLAY.md`), Charakter-Brief (`CHARACTER.md`) |
+| 3. Echtes Spiel | `3rd_iter/` | Gegner-Design (`ENEMIES.md`), Schießen, Boss, Punkte, Sieg/Niederlage |
+| Ergebnis | `dist/level1/` | Eigenständiges Godot-Projekt, per `tools/export-windows.sh` als Windows-exe exportierbar |
 
-Die Prüf- und Startskripte erwarten eine **Linux**-Binary. Eine Windows-`.exe`
-läuft zwar über WSL-Interop, ist aber langsamer und braucht einen Sonderweg.
-Am einfachsten installierst du die offizielle Linux-Binary nach `~/.local/bin`:
+Jede Iteration beginnt mit einem **Brief als Markdown** (Was soll es werden?),
+danach implementiert der Agent. Details stehen in den `README.md`-Dateien der
+jeweiligen Ordner.
 
-```bash
-mkdir -p ~/.local/bin
-curl -L -o /tmp/godot.zip \
-  https://github.com/godotengine/godot/releases/download/4.7.2-stable/Godot_v4.7.2-stable_linux.x86_64.zip
-unzip -o /tmp/godot.zip -d /tmp/godot
-install -m 755 /tmp/godot/Godot_v4.7.2-stable_linux.x86_64 ~/.local/bin/godot
-godot --version   # muss 4.7.2.stable.official... ausgeben
-```
+## Schnellstart
 
-`~/.local/bin` liegt in WSL standardmäßig im PATH. Falls nicht, ergänze in
-`~/.bashrc`:
+Voraussetzungen: WSL (Linux-Dateisystem, nicht `/mnt/c/...`), Godot 4.7.2 als
+Linux-Binary, Node.js/npm und OpenCode. Ausführlich: `README_SETUP.md`.
 
 ```bash
-export PATH="$HOME/.local/bin:$PATH"
+cp .env.example .env            # OPENROUTER_API_KEY eintragen (.env nie committen!)
+./tools/check-project.sh        # Projekt headless prüfen
+./start-opencode.sh             # OpenCode starten
 ```
 
-**Alternative – abweichender Pfad:** Liegt Godot woanders (oder nutzt du die
-Windows-Binary), trage den absoluten Pfad in `.env` ein:
+Danach den Text aus `ERSTER_AUFTRAG.md` in OpenCode einfügen. Regeln für den
+Agenten: `AGENTS.md`, Spielziel: `GAME_SPEC.md`, aktueller Stand:
+`AGENT_HANDOFF.md`.
 
-```dotenv
-GODOT_BIN=/opt/godot/Godot_v4.7.2-stable_linux.x86_64
+Beispielspiel direkt starten:
+
+```bash
+./dist/level1/tools/godot.sh   # oder dist/level1/project.godot importieren, F5
 ```
 
-`tools/godot.sh` sucht in dieser Reihenfolge: `GODOT_BIN`, dann `godot`, dann
-`godot4` aus dem PATH. Für die Windows-Binary die `_console.exe` verwenden,
-sonst fehlt die Terminal-Ausgabe:
+Steuerung dort: A/D laufen, Space/W springen, Maus halten zum Zielen und
+Feuern (J schießt geradeaus), Esc Pause, R Neustart.
 
-```dotenv
-GODOT_BIN=/mnt/c/.../Godot_v4.7.2-stable_win64_console.exe
-```
+## Eigenes Spiel starten
 
-## Erste Schritte
+1. Neuen Brief schreiben (Setting, Levelaufbau, Elemente) – Vorlage:
+   `level1.md`.
+2. Art-Direction festlegen – Vorlage: `1st_iter/docs/art/ART_DIRECTION.md`.
+3. Charakter/Gegner per Chatmodell entwerfen – Anleitung: `docs/ASSETS.md`.
+4. Gameplay-Brief formulieren – Vorlage: `2nd_iter/GAMEPLAY.md`.
+5. Gegner-Brief formulieren – Vorlage: `3rd_iter/ENEMIES.md`.
+6. Dem Agenten die drei Briefs der Reihe nach geben, jeweils spielen,
+   bewerten, nachschärfen.
+7. Exportieren: `./tools/export-windows.sh <level>` – legt `exe + pck` nach
+   `build/windows/<level>/` und kopiert sie auf die Windows-Seite
+   (`/mnt/c/gamedev_astra/dist/<level>/`). Einmalig sind Export-Templates
+   nötig (im Editor: Editor -> Manage Export Templates).
 
-1. **OpenRouter-Key holen**: auf <https://openrouter.ai/keys> einen Key
-   anlegen (kostenpflichtiges Guthaben nötig).
-2. **`.env` anlegen**: `cp .env.example .env` und den Key eintragen:
+## Assets
 
-   ```dotenv
-   OPENROUTER_API_KEY=sk-or-v1-...
-   ```
+Alle Grafiken und Sounds hier sind entweder im Projekt erzeugt oder mit
+Chatmodellen entworfen – keine gekauften Packs nötig. Wie das geht, welche
+Prompts funktionieren und wo die Beispiele liegen: **`docs/ASSETS.md`**.
+Herkunft jedes Assets steht in den `CREDITS.md`-Dateien (`assets/`,
+`dist/level1/assets/`).
 
-   Die `.env` ist per `.gitignore` ausgeschlossen und für OpenCode gesperrt.
-   Details und Alternativen (`GODOT_BIN`) in `README_SETUP.md`.
-3. **Projekt prüfen**: `./tools/check-project.sh` – importiert das Projekt
-   headless und startet die Hauptszene kurz.
-4. **OpenCode starten**: `./start-opencode.sh` – exportiert den Key in den
-   Prozess und startet OpenCode; `/connect` ist nicht nötig.
-5. **Auftrag einfügen**: den Text aus `ERSTER_AUFTRAG.md` in OpenCode
-   kopieren. Der Agent implementiert dann den ersten Meilenstein.
+## Doku-Übersicht
 
-## Modell
+- `website/` – Begleit-Website (Start: `./start-website.sh`), Anleitung von WSL bis Iteration 1 mit allen Verlinkungen
+- `README_SETUP.md` – WSL-Setup im Detail
+- `docs/ASSETS.md` – Assets mit ChatGPT & Co. erstellen
+- `docs/PUBLISH.md` – Checkliste für GitHub (was committen, was nicht)
+- `GAME_SPEC.md` – verbindliche Spielregeln
+- `AGENTS.md` – Arbeitsweise des Agenten
+- `AGENT_HANDOFF.md` – aktueller Stand für den nächsten Agenten
+- `ERSTER_AUFTRAG.md`, `2_AUFTRAG.md` – Startaufträge zum Einfügen
 
-- Hauptmodell: `openrouter/deepseek/deepseek-v4.1-flash`
-- Günstiger Worker: `openrouter/deepseek/deepseek-v4-flash-0731`
+## Enthaltenes Beispiel 1: Neon Rush (Root-Projekt)
 
-Wechseln mit `/models` in OpenCode.
+Das Root-Projekt ist ein separates, älteres Beispiel: Cyberpunk-Jump-&-Run
+mit drei Leveln, Menüs und Speicherung. Start: `godot` im Projektordner,
+Hauptszene `scenes/menu/main_menu.tscn`. Assets dafür erzeugen
+`tools/generate_assets.py` und `tools/generate_audio.py` (Quellen und
+Lizenzen in `assets/CREDITS.md`).
 
 ## Sicherheit
 
-`opencode.json` erlaubt nur das Nötigste und lässt OpenCode um Erlaubnis
-fragen, bevor er Unbekanntes ausführt oder committet. `.env` ist gesperrt,
-ebenso `git push`, `git reset --hard`, `git clean` und `rm -rf`.
-
-Für einen unbeaufsichtigten Durchlauf („Yolo-Modus") die `permission`-Regeln
-in `opencode.json` lockern – bewusst und auf eigenes Risiko.
-
-## Weiterlesen
-
-- `README_SETUP.md` – ausführliches WSL-Setup
-- `GAME_SPEC.md` – was gebaut wird
-- `AGENTS.md` – Arbeitsweise des Agenten
-- `ERSTER_AUFTRAG.md` – Startauftrag zum Einfügen
+`.env` (API-Key) ist per `.gitignore` ausgeschlossen und für den Agenten
+gesperrt, ebenso `git push`, `git reset --hard` und `rm -rf`. Vor dem
+Veröffentlichen unbedingt `docs/PUBLISH.md` lesen.

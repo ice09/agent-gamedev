@@ -1,0 +1,447 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="description" content="Anleitung: Mit WSL, Godot 4.7.2 und KI-Agent vom leeren Ordner bis zur ersten Iteration des 2D-Cyberpunk-Spiels Signal Infestation.">
+  <title>Signal Infestation – Vom Start bis zur 1. Iteration (WSL + Godot)</title>
+  <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' rx='7' fill='%230a0e14'/%3E%3Cpath d='M16 5 27 25H5Z' fill='none' stroke='%238a5cff' stroke-width='2.5'/%3E%3Ccircle cx='16' cy='19' r='3' fill='%2346d8e8'/%3E%3C/svg%3E">
+  <link rel="stylesheet" href="style.css">
+  <script src="app.js" defer></script>
+</head>
+<body>
+  <a class="skip-link" href="#inhalt">Zum Inhalt springen</a>
+
+  <header class="site-header">
+    <div class="header-inner">
+      <a class="brand" href="#top"><span class="sigil">▲</span> SIGNAL INFESTATION</a>
+      <nav class="main-nav" aria-label="Anleitung">
+        <a href="#start">Start</a>
+        <a href="#voraussetzungen">Voraussetzungen</a>
+        <a href="#wsl">WSL</a>
+        <a href="#godot">Godot</a>
+        <a href="#opencode">OpenCode</a>
+        <a href="#pruefen">Prüfen</a>
+        <a href="#spielidee">Spielidee</a>
+        <a href="#iteration1">1. Iteration</a>
+        <a href="#galerie">Bilder</a>
+        <a href="#ausblick">Ausblick</a>
+        <a href="#ressourcen">Dateien</a>
+        <a href="#fehler">Hilfe</a>
+      </nav>
+    </div>
+  </header>
+
+  <main id="inhalt">
+    <div class="hero" id="top">
+      <p class="kicker">Begleit-Website zum Repository</p>
+      <h1>Vom leeren Windows-PC bis zur ersten Iteration deines 2D-Spiels</h1>
+      <p class="lead">Diese Anleitung führt dich unter Windows mit WSL und Godot 4.7.2
+        Schritt für Schritt bis zur <strong>1.&nbsp;Iteration</strong>: der Art-Bibel mit
+        Charakter-Referenzen, Farbpalette und Welt-Ebenen. Danach baut ein KI-Agent
+        daraus das spielbare Cyberpunk-Jump-&rsquo;n-&rsquo;Run
+        <strong>Signal Infestation</strong>.</p>
+      <div class="cta-row">
+        <a class="btn btn-primary" href="#wsl">Los geht&rsquo;s: WSL einrichten</a>
+        <a class="btn btn-ghost" href="#galerie">Erst das Spiel ansehen</a>
+      </div>
+      <figure class="art hero-shot">
+        <img src="../dist/level1/captures/combat_entrance.png"
+             alt="Screenshot aus Signal Infestation: Spielfigur mit violetten Akzenten auf einer Wartungsplattform, davor ein sechsläufiger Schienenbeißer-Gegner, darüber dunkle Wohntürme im Nebel"
+             width="1280" height="720" fetchpriority="high">
+        <figcaption>So sieht das Ergebnis später im Spiel aus: Wartungssektor, Schienenbeißer und Augenqualle. Datei: <code>dist/level1/captures/combat_entrance.png</code></figcaption>
+      </figure>
+    </div>
+
+    <p class="progress" id="checklist-progress" role="status"></p>
+
+    <!-- ===================== 1. START ===================== -->
+    <section id="start" aria-labelledby="start-h">
+      <h2 id="start-h">1 · Überblick: Was passiert hier?</h2>
+      <p class="section-sub">Drei Zutaten arbeiten zusammen: du (Idee + Geschmack),
+        ein Chatmodell (Bilder) und ein Coding-Agent (Umsetzung im Code).</p>
+      <div class="grid-2">
+        <div class="card">
+          <h3>Du lieferst</h3>
+          <ul>
+            <li>Die Spielidee als kurzen <strong>Brief</strong> (<a href="../level1.md">level1.md</a>)</li>
+            <li>Referenzbilder aus einem Bildmodell</li>
+            <li>Spieltests: spielen, bewerten, nachschärfen</li>
+          </ul>
+        </div>
+        <div class="card">
+          <h3>Der Agent erledigt</h3>
+          <ul>
+            <li>Ordner, Szenen, Skripte und Gegner anlegen</li>
+            <li>Prüfläufe (<a href="../dist/level1/tools/check-project.sh">check-project.sh</a>) und Fehler beheben</li>
+            <li>Übergabe in <a href="../AGENT_HANDOFF.md">AGENT_HANDOFF.md</a> pflegen</li>
+          </ul>
+        </div>
+      </div>
+      <div class="notice notice-info">
+        <strong>Regel Nr. 1: Linux-Dateisystem!</strong>
+        <p>Lege das Repository unter WSL an, z.&nbsp;B. <code>~/projects/agent-game</code> –
+          <strong>nicht</strong> unter <code>/mnt/c/…</code>. Dort sind viele kleine
+          Dateioperationen deutlich langsamer (siehe <a href="../README_SETUP.md">README_SETUP.md</a>).</p>
+      </div>
+    </section>
+
+    <!-- ===================== 2. VORAUSSETZUNGEN ===================== -->
+    <section id="voraussetzungen" aria-labelledby="vor-h">
+      <h2 id="vor-h">2 · Voraussetzungen im Überblick</h2>
+      <p class="section-sub">Alles, was du brauchst – Details folgen in den nächsten Schritten.</p>
+      <table>
+        <thead><tr><th>Was</th><th>Wofür</th><th>Version</th></tr></thead>
+        <tbody>
+          <tr><td>Windows + <strong>WSL2</strong></td><td>Entwicklungsumgebung (Ubuntu empfohlen)</td><td>Windows 10/11</td></tr>
+          <tr><td><strong>Godot</strong> (Linux-Binary)</td><td>Engine, Editor, Export</td><td>4.7.2</td></tr>
+          <tr><td><strong>Node.js + npm</strong></td><td>OpenCode installieren</td><td>aktuell LTS</td></tr>
+          <tr><td><strong>OpenCode</strong></td><td>KI-Coding-Agent</td><td>per npm</td></tr>
+          <tr><td>OpenRouter-Key</td><td>Modellzugang für den Agenten</td><td><code>.env</code>, nie committen</td></tr>
+        </tbody>
+      </table>
+    </section>
+
+    <!-- ===================== 3. WSL ===================== -->
+    <section id="wsl" aria-labelledby="wsl-h">
+      <h2 id="wsl-h">3 · WSL einrichten und Repo ablegen</h2>
+      <div class="card step steps">
+        <h3>WSL installieren (Windows-PowerShell als Administrator)</h3>
+        <pre data-copy><code>wsl --install
+wsl --set-default-version 2</code></pre>
+        <p>Danach Ubuntu aus dem Microsoft Store installieren, starten und ein
+          Benutzerkonto anlegen. Details: <a href="../README_SETUP.md">README_SETUP.md</a>.</p>
+      </div>
+      <div class="card step">
+        <h3>Projektordner im Linux-Dateisystem anlegen</h3>
+        <pre data-copy><code>mkdir -p ~/projects/agent-game
+cd ~/projects/agent-game</code></pre>
+        <p>Repository hierher klonen bzw. entpacken und ausführbar machen:</p>
+        <pre data-copy><code>chmod +x start-opencode.sh tools/*.sh</code></pre>
+      </div>
+      <div class="card step">
+        <h3>Node.js, npm und OpenCode prüfen</h3>
+        <pre data-copy><code>node --version
+npm --version
+npm install -g opencode-ai</code></pre>
+      </div>
+    </section>
+
+    <!-- ===================== 4. GODOT ===================== -->
+    <section id="godot" aria-labelledby="godot-h">
+      <h2 id="godot-h">4 · Godot 4.7.2 in WSL installieren</h2>
+      <p class="section-sub">Die Prüf- und Startskripte erwarten die <strong>Linux</strong>-Binary.
+        Eine Windows-<code>.exe</code> läuft zwar über WSL-Interop, ist aber langsamer.</p>
+      <div class="card">
+        <h3>Offizielle Linux-Binary nach <code>~/.local/bin</code> installieren</h3>
+        <pre data-copy><code>mkdir -p ~/.local/bin
+curl -L -o /tmp/godot.zip \
+  https://github.com/godotengine/godot/releases/download/4.7.2-stable/Godot_v4.7.2-stable_linux.x86_64.zip
+unzip -o /tmp/godot.zip -d /tmp/godot
+install -m 755 /tmp/godot/Godot_v4.7.2-stable_linux.x86_64 ~/.local/bin/godot
+godot --version</code></pre>
+        <p>Erwartet: <code>4.7.2.stable.official…</code>. <code>~/.local/bin</code> liegt
+          in WSL standardmäßig im PATH, sonst in <code>~/.bashrc</code> ergänzen:</p>
+        <pre data-copy><code>export PATH="$HOME/.local/bin:$PATH"</code></pre>
+      </div>
+      <div class="notice notice-info">
+        <strong>Alternative: abweichender Pfad</strong>
+        <p>Liegt Godot woanders (oder nutzt du die Windows-Binary), trage den absoluten
+          Pfad als <code>GODOT_BIN</code> in <code>.env</code> ein – für die Windows-Binary
+          die <code>_console.exe</code> verwenden, sonst fehlt die Terminal-Ausgabe.
+          <code>tools/godot.sh</code> sucht in der Reihenfolge <code>GODOT_BIN</code>,
+          <code>godot</code>, <code>godot4</code>.</p>
+      </div>
+    </section>
+
+    <!-- ===================== 5. OPENCODE ===================== -->
+    <section id="opencode" aria-labelledby="oc-h">
+      <h2 id="oc-h">5 · OpenCode starten (API-Key + Sicherheit)</h2>
+      <div class="card step steps">
+        <h3>OpenRouter-Key holen und in <code>.env</code> ablegen</h3>
+        <pre data-copy><code>cp .env.example .env</code></pre>
+        <p>Dann in <code>.env</code> eintragen (Vorlage: <a href="../.env.example">.env.example</a>):</p>
+        <pre data-copy><code>OPENROUTER_API_KEY=sk-or-v1-...
+GODOT_BIN=/pfad/zu/godot   # nur falls nötig</code></pre>
+        <div class="notice notice-warn">
+          <strong>Nie committen!</strong>
+          <p><code>.env</code> ist per <code>.gitignore</code> ausgeschlossen und für
+            OpenCode gesperrt. Modellwahl in OpenCode mit <code>/models</code>
+            (Standard: <code>openrouter/deepseek/deepseek-v4.1-flash</code>).</p>
+        </div>
+      </div>
+      <div class="card step">
+        <h3>Starten und ersten Auftrag einfügen</h3>
+        <pre data-copy><code>./start-opencode.sh</code></pre>
+        <p>Der Starter exportiert den Key in den Prozess (<code>/connect</code> ist nicht
+          nötig). Danach den Text aus <a href="../ERSTER_AUFTRAG.md">ERSTER_AUFTRAG.md</a>
+          in OpenCode einfügen – der Agent liest <a href="../AGENTS.md">AGENTS.md</a>,
+          <a href="../GAME_SPEC.md">GAME_SPEC.md</a> und <a href="../AGENT_HANDOFF.md">AGENT_HANDOFF.md</a>
+          und baut den ersten Meilenstein selbstständig.</p>
+      </div>
+    </section>
+
+    <!-- ===================== 6. PRÜFEN ===================== -->
+    <section id="pruefen" aria-labelledby="pr-h">
+      <h2 id="pr-h">6 · Projekt prüfen (headless)</h2>
+      <p class="section-sub">Jede Änderung wird maschinell geprüft – auch deine ersten Schritte.</p>
+      <pre data-copy><code>./tools/check-project.sh</code></pre>
+      <p>Der Test öffnet Godot headless, importiert das Projekt und startet die
+        Hauptszene kurz. Nach Code- oder Szenenänderungen zusätzlich den Skill
+        <code>godot-pruefen</code> laden lassen.</p>
+    </section>
+
+    <!-- ===================== 7. SPIELIDEE ===================== -->
+    <section id="spielidee" aria-labelledby="si-h">
+      <h2 id="si-h">7 · Spielidee festhalten: Brief + Spec</h2>
+      <div class="grid-2">
+        <div class="card">
+          <h3>Level-Brief schreiben</h3>
+          <p>Ort, begehbare Elemente, Licht, Tiefe, Ausschlüsse – kein fertiges Bild.
+            Vorlage und Beispiel: <a href="../level1.md">level1.md</a> (Lower Transit Sector:
+            verlassene Magnetbahn, Wartungsstege, Nebel-Abgrund, violette Diagnoselichter).</p>
+        </div>
+        <div class="card">
+          <h3>Spielregeln festhalten</h3>
+          <p>Was muss die erste spielbare Version können? Verbindlich steht das in
+            <a href="../GAME_SPEC.md">GAME_SPEC.md</a>: WASD-Steuerung, Sammelobjekte,
+            Punktestand, Gefahren, Game Over, Neustart – erst mal mit Platzhaltergrafik.</p>
+        </div>
+      </div>
+    </section>
+
+    <!-- ===================== 8. ITERATION 1 ===================== -->
+    <section id="iteration1" aria-labelledby="it1-h">
+      <h2 id="it1-h">8 · 1. Iteration: die Art-Bibel bauen</h2>
+      <p class="section-sub">Ziel: <strong>eine verbindliche visuelle Wahrheit</strong>, bevor eine
+        einzige Spielgrafik entsteht. Anleitung des Agenten:
+        <a href="../1st_interation.md">1st_interation.md</a>, Umsetzung:
+        <a href="../1st_iter/README.md">1st_iter/README.md</a>. Merksatz aus dem Brief:</p>
+      <div class="notice notice-info">
+        <strong>docs/art/ = Wahrheit / Referenz · assets/ = Spieldateien</strong>
+        <p>Referenzbilder werden <strong>nie</strong> direkt als Sprites verwendet – sie sind
+          die Vorlage, die jeder Agent und jedes Bildmodell bekommt.</p>
+      </div>
+
+      <div class="card">
+        <h3>8.1 · Unverrückbare Regeln: ART_DIRECTION.md</h3>
+        <p>Eine Datei mit allem, was sich nie ändern darf – z.&nbsp;B. Gesichtsform, Brille,
+          Mantel-Silhouette, Violett-Akzente, strikt seitliche 2D-Kamera ohne Perspektive,
+          dunkle Welt mit Nebel, Regen und Dampf.
+          <a href="../1st_iter/docs/art/ART_DIRECTION.md">ART_DIRECTION.md lesen</a>.
+          Später genügt der Satz an den Agenten: <em>„Read docs/art/ART_DIRECTION.md
+          before creating or modifying any visual asset.“</em></p>
+      </div>
+
+      <div class="card">
+        <h3>8.2 · Charakter-Bibel ansehen</h3>
+        <p>Fünf Referenzbilder liegen in
+          <a href="../1st_iter/docs/art/character_bible/README.md">1st_iter/docs/art/character_bible/</a>.
+          Die Master-Referenz definiert Identität, Details und Palette:</p>
+        <figure class="art">
+          <img src="../1st_iter/docs/art/character_bible/player_master_reference.png"
+               alt="Charakter-Referenzblatt: Cyberpunk-Agent mit Brille, dunklem Mantel und violetten Tech-Akzenten, dazu Detailausschnitte und Farbpalette"
+               width="1536" height="1024" loading="lazy">
+          <figcaption>Master-Referenz: Figur, Details, Material, Palette. Datei:
+            <a href="../1st_iter/docs/art/character_bible/player_master_reference.png">player_master_reference.png</a></figcaption>
+        </figure>
+        <figure class="art">
+          <img src="../1st_iter/docs/art/character_bible/player_turnaround.png"
+               alt="Turnaround des Charakters: Vorder-, Seiten- und Rückansicht des Agenten mit Mantel und violetten Leuchtstreifen"
+               width="1536" height="1024" loading="lazy">
+          <figcaption>Turnaround für richtungskonsistente Sprites:
+            <a href="../1st_iter/docs/art/character_bible/player_turnaround.png">player_turnaround.png</a></figcaption>
+        </figure>
+        <figure class="art">
+          <img src="../1st_iter/docs/art/character_bible/player_keyposes.png"
+               alt="Key-Posen-Blatt: Lauf-, Sprung-, Hocke- und Angriffsposen des Charakters in Seitenansicht"
+               width="1536" height="1024" loading="lazy">
+          <figcaption>Key-Posen als Animationsreferenz:
+            <a href="../1st_iter/docs/art/character_bible/player_keyposes.png">player_keyposes.png</a>.
+            Weitere Blätter: <a href="../1st_iter/docs/art/character_bible/player_poses.png">player_poses.png</a>,
+            <a href="../1st_iter/docs/art/character_bible/player_character_bible.png">player_character_bible.png</a></figcaption>
+        </figure>
+      </div>
+
+      <div class="card">
+        <h3>8.3 · Palette festschreiben</h3>
+        <p>Fast-schwarz und Anthrazit dominieren, Violett ist der Tech-Akzent, Cyan nur
+          sparsam, warmes Licht ist selten und damit wichtig. Ausgeschrieben in
+          <a href="../1st_iter/docs/art/character_bible/player_palette.md">player_palette.md</a>.</p>
+      </div>
+
+      <div class="card">
+        <h3>8.4 · Welt in Schichten denken (Parallax)</h3>
+        <p>Kein einzelnes Hintergrundbild, sondern sechs Ebenen mit Faktoren –
+          der zentrale Prompt steht in
+          <a href="../1st_iter/docs/art/environment_bible/MASTER_ENVIRONMENT_PROMPT.md">MASTER_ENVIRONMENT_PROMPT.md</a>
+          (Englisch, stabiler für Bildmodelle), die Ebenen-Tabelle in
+          <a href="../1st_iter/docs/art/environment_bible/README.md">environment_bible/README.md</a>:</p>
+        <table>
+          <thead><tr><th>Ebene</th><th>Faktor bei Kamerafahrt rechts</th></tr></thead>
+          <tbody>
+            <tr><td>Sky / Fog</td><td><code>0.05x</code></td></tr>
+            <tr><td>Far city skyline</td><td><code>0.15x</code></td></tr>
+            <tr><td>Mid buildings</td><td><code>0.35x</code></td></tr>
+            <tr><td>Near buildings</td><td><code>0.60x</code></td></tr>
+            <tr><td>Gameplay / Kollision</td><td><code>1.00x</code></td></tr>
+            <tr><td>Foreground FX</td><td><code>1.10x</code></td></tr>
+          </tbody>
+        </table>
+      </div>
+
+      <div class="notice notice-ok">
+        <strong>Fertig, wenn …</strong>
+        <p>… <code>1st_iter/docs/art/</code> Referenz, Palette und Ebenen-Plan enthält,
+          die Produktionsordner unter <code>1st_iter/assets/</code> und <code>src/</code>
+          angelegt sind und <code>1st_iter/AGENT_HANDOFF.md</code> den Stand beschreibt.
+          Erst dann kommt Iteration&nbsp;2 (spielbar) und 3 (Gegner, Boss, Export).</p>
+      </div>
+    </section>
+
+    <!-- ===================== GALERIE ===================== -->
+    <section id="galerie" aria-labelledby="gal-h">
+      <h2 id="gal-h">Bilder aus dem fertigen Spiel</h2>
+      <p class="section-sub">So sieht Iteration&nbsp;3 aus – automatisch erzeugte Screenshots aus
+        <a href="../dist/level1/captures/">dist/level1/captures/</a>. Eigene Screenshots legst du
+        einfach dort ab und verlinkst sie hier als <code>&lt;figure&gt;</code> wie unten.</p>
+      <!-- Eigene Screenshots: Datei nach dist/level1/captures/ legen und hier
+           einen figure-Block nach diesem Muster ergänzen (alt-Text nicht vergessen!). -->
+      <div class="gallery">
+        <figure class="art">
+          <img src="../dist/level1/captures/player_firing.png"
+               alt="Spielfigur feuert den violetten Impuls auf den Schienenbeißer, rechts schwebt eine Augenqualle"
+               width="1280" height="720" loading="lazy">
+          <figcaption>Kampf: violetter Impuls gegen Schienenbeißer</figcaption>
+        </figure>
+        <figure class="art">
+          <img src="../dist/level1/captures/enemy_jelly.png"
+               alt="Schwebende Augenqualle mit Tentakeln über einer Plattform im Nebel"
+               width="1280" height="720" loading="lazy">
+          <figcaption>Gegner: Augenqualle</figcaption>
+        </figure>
+        <figure class="art">
+          <img src="../dist/level1/captures/enemy_choir.png"
+               alt="Lückenchor-Gegner aus drei schwebenden Masken vor Wohntürmen"
+               width="1280" height="720" loading="lazy">
+          <figcaption>Gegner: Lückenchor</figcaption>
+        </figure>
+        <figure class="art">
+          <img src="../dist/level1/captures/enemy_cantor.png"
+               alt="Boss Nullkantor: rotierender Maskenring um ein großes dunkles Auge"
+               width="1280" height="720" loading="lazy">
+          <figcaption>Boss: Nullkantor</figcaption>
+        </figure>
+        <figure class="art">
+          <img src="../dist/level1/captures/victory.png"
+               alt="Sieg-Bildschirm nach besiegtem Boss mit Punktestand"
+               width="1280" height="720" loading="lazy">
+          <figcaption>Sieg-Bildschirm</figcaption>
+        </figure>
+      </div>
+    </section>
+
+    <!-- ===================== AUSBLICK ===================== -->
+    <section id="ausblick" aria-labelledby="au-h">
+      <h2 id="au-h">Ausblick: Iteration 2, 3 und Export</h2>
+      <div class="grid-2">
+        <div class="card">
+          <h3>2. Iteration – spielbar</h3>
+          <p>Gameplay-Brief (<a href="../2nd_iter/GAMEPLAY.md">GAMEPLAY.md</a>) und Charakter-Brief
+            (<a href="../2nd_iter/CHARACTER.md">CHARACTER.md</a>): Laufen, Springen, Kamera,
+            Checkpoints. Start: <code>dist/level1/project.godot</code> importieren, F5.</p>
+        </div>
+        <div class="card">
+          <h3>3. Iteration – Kampf &amp; Export</h3>
+          <p>Gegner-Design (<a href="../3rd_iter/ENEMIES.md">ENEMIES.md</a>), Schießen, Boss,
+            Punkte. Windows-Build: <code>./tools/export-windows.sh level1</code> erzeugt
+            <code>exe + pck</code> (Skript: <a href="../tools/export-windows.sh">export-windows.sh</a>;
+            Templates einmalig via Editor&nbsp;→ Manage Export Templates installieren).</p>
+        </div>
+      </div>
+    </section>
+
+    <!-- ===================== RESSOURCEN ===================== -->
+    <section id="ressourcen" aria-labelledby="re-h">
+      <h2 id="re-h">Alle Dateien im Überblick</h2>
+      <p class="section-sub">Die Website läuft aus dem Repository – alle Links zeigen direkt
+        auf die echten Dateien.</p>
+      <ul class="res-list">
+        <li><a href="../README.md">README.md</a> – Startseite des Repos</li>
+        <li><a href="../README_SETUP.md">README_SETUP.md</a> – WSL-Setup ausführlich</li>
+        <li><a href="../GAME_SPEC.md">GAME_SPEC.md</a> – Spielregeln</li>
+        <li><a href="../AGENTS.md">AGENTS.md</a> – Anweisung für den Agenten</li>
+        <li><a href="../AGENT_HANDOFF.md">AGENT_HANDOFF.md</a> – aktueller Stand</li>
+        <li><a href="../ERSTER_AUFTRAG.md">ERSTER_AUFTRAG.md</a> – Auftrag für OpenCode</li>
+        <li><a href="../1st_interation.md">1st_interation.md</a> – Art-Brief des Mentors</li>
+        <li><a href="../level1.md">level1.md</a> – Level-Brief</li>
+        <li><a href="../1st_iter/README.md">1st_iter/README.md</a> – Iteration 1</li>
+        <li><a href="../1st_iter/docs/art/ART_DIRECTION.md">ART_DIRECTION.md</a> – visuelle Regeln</li>
+        <li><a href="../1st_iter/docs/art/character_bible/README.md">character_bible/README.md</a> – Bildindex</li>
+        <li><a href="../1st_iter/docs/art/character_bible/player_palette.md">player_palette.md</a> – Palette</li>
+        <li><a href="../1st_iter/docs/art/environment_bible/README.md">environment_bible/README.md</a> – Ebenen-Plan</li>
+        <li><a href="../1st_iter/docs/art/environment_bible/MASTER_ENVIRONMENT_PROMPT.md">MASTER_ENVIRONMENT_PROMPT.md</a> – Welt-Prompt</li>
+        <li><a href="../docs/ASSETS.md">docs/ASSETS.md</a> – Assets mit KI erstellen</li>
+        <li><a href="../docs/PUBLISH.md">docs/PUBLISH.md</a> – GitHub-Checkliste</li>
+        <li><a href="../2nd_iter/README.md">2nd_iter/README.md</a> – Iteration 2</li>
+        <li><a href="../3rd_iter/README.md">3rd_iter/README.md</a> – Iteration 3</li>
+        <li><a href="../dist/level1/README.md">dist/level1/README.md</a> – das fertige Spiel</li>
+        <li><a href="../tools/export-windows.sh">tools/export-windows.sh</a> – Windows-Export</li>
+        <li><a href="../tools/check-project.sh">tools/check-project.sh</a> – Prüflauf</li>
+        <li><a href="../tools/godot.sh">tools/godot.sh</a> – Godot-Wrapper</li>
+        <li><a href="../start-opencode.sh">start-opencode.sh</a> – OpenCode-Starter</li>
+        <li><a href="../.env.example">.env.example</a> – Vorlage für API-Key</li>
+      </ul>
+    </section>
+
+    <!-- ===================== FEHLER ===================== -->
+    <section id="fehler" aria-labelledby="fe-h">
+      <h2 id="fe-h">Hilfe bei Fehlern</h2>
+      <div class="card">
+        <h3><code>godot: command not found</code></h3>
+        <p>Binary liegt nicht im PATH. Entweder nach <code>~/.local/bin</code> installieren
+          (Schritt&nbsp;4) oder in <code>.env</code> setzen: <code>GODOT_BIN=/pfad/zu/godot</code>.
+          Für die Windows-Binary die <code>_console.exe</code> nehmen.</p>
+      </div>
+      <div class="card">
+        <h3>Export scheitert: Templates fehlen</h3>
+        <p>Im Editor unter <strong>Editor&nbsp;→ Manage Export Templates</strong> die
+          Windows-Templates installieren. Achtung WSL-Falle: Templates aus einem
+          Windows-nativen Godot landen unter <code>%APPDATA%/Godot/…</code> und sind für
+          WSL-Godot unsichtbar – <code>tools/export-windows.sh</code> übernimmt sie
+          automatisch nach <code>~/.local/share/godot/export_templates/</code>.</p>
+      </div>
+      <div class="card">
+        <h3>Alles langsam / Dateien verschwinden</h3>
+        <p>Repo liegt vermutlich unter <code>/mnt/c/…</code> – ins Linux-Dateisystem
+          umziehen (<code>~/projects/…</code>), siehe Schritt&nbsp;1.</p>
+      </div>
+    </section>
+
+    <!-- ===================== CHECKLISTE ===================== -->
+    <section id="checkliste" aria-labelledby="ch-h">
+      <h2 id="ch-h">Deine Checkliste bis Iteration 1</h2>
+      <p class="section-sub">Wird nur in deinem Browser gespeichert – nichts verlässt deinen Rechner.</p>
+      <ul class="checklist">
+        <li><input type="checkbox" id="c1"><label for="c1"><span>WSL2 + Ubuntu installiert, Repo unter <code>~/projects/…</code> abgelegt</span></label></li>
+        <li><input type="checkbox" id="c2"><label for="c2"><span>Godot 4.7.2 installiert, <code>godot --version</code> meldet 4.7.2</span></label></li>
+        <li><input type="checkbox" id="c3"><label for="c3"><span>Node, OpenCode und <code>.env</code> mit API-Key eingerichtet</span></label></li>
+        <li><input type="checkbox" id="c4"><label for="c4"><span><code>./tools/check-project.sh</code> läuft fehlerfrei durch</span></label></li>
+        <li><input type="checkbox" id="c5"><label for="c5"><span><code>GAME_SPEC.md</code> und Level-Brief gelesen bzw. geschrieben</span></label></li>
+        <li><input type="checkbox" id="c6"><label for="c6"><span><code>ART_DIRECTION.md</code> gelesen, Charakter-Bibel und Palette angesehen</span></label></li>
+        <li><input type="checkbox" id="c7"><label for="c7"><span>Ebenen-Plan + Environment-Prompt verstanden (Parallax-Faktoren)</span></label></li>
+        <li><input type="checkbox" id="c8"><label for="c8"><span>1. Iteration an den Agenten übergeben, <code>AGENT_HANDOFF.md</code> beschreibt den Stand</span></label></li>
+      </ul>
+    </section>
+  </main>
+
+  <footer>
+    <p>Begleit-Website zum Repository „Signal Infestation“. Alle Links zeigen auf echte
+      Dateien im Repo – starte sie per <code>./start-website.sh</code> aus dem Projektordner.
+      Screenshots: <code>dist/level1/captures/</code>, Charakter-Referenzen:
+      <code>1st_iter/docs/art/character_bible/</code>.</p>
+  </footer>
+
+  <p class="sr-only" id="copy-status" role="status"></p>
+</body>
+</html>

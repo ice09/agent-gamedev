@@ -1,0 +1,335 @@
+[gd_scene load_steps=24 format=3]
+
+[ext_resource type="Script" path="res://scripts/level1.gd" id="1"]
+[ext_resource type="Texture2D" path="res://assets/environments/district_01/backgrounds/sky.svg" id="2"]
+[ext_resource type="Texture2D" path="res://assets/environments/district_01/backgrounds/far/skyline.svg" id="3"]
+[ext_resource type="Texture2D" path="res://assets/environments/district_01/backgrounds/middle/residential.svg" id="4"]
+[ext_resource type="Texture2D" path="res://assets/environments/district_01/backgrounds/near/infrastructure.svg" id="5"]
+[ext_resource type="Texture2D" path="res://assets/environments/district_01/platforms/transit.svg" id="6"]
+[ext_resource type="Texture2D" path="res://assets/environments/district_01/props/roof.svg" id="7"]
+[ext_resource type="Script" path="res://scripts/machinery.gd" id="8"]
+[ext_resource type="Shader" path="res://shaders/atmosphere.gdshader" id="9"]
+[ext_resource type="PackedScene" path="res://scenes/player.tscn" id="10"]
+[ext_resource type="Script" path="res://scripts/combat.gd" id="11"]
+
+[sub_resource type="ShaderMaterial" id="AtmosphereMaterial"]
+shader = ExtResource("9")
+
+[sub_resource type="RectangleShape2D" id="Floor1"]
+size = Vector2(760, 34)
+[sub_resource type="RectangleShape2D" id="Floor2"]
+size = Vector2(510, 34)
+[sub_resource type="RectangleShape2D" id="Floor3"]
+size = Vector2(270, 34)
+[sub_resource type="RectangleShape2D" id="Floor4"]
+size = Vector2(340, 34)
+[sub_resource type="RectangleShape2D" id="Floor5"]
+size = Vector2(320, 34)
+[sub_resource type="RectangleShape2D" id="Floor6"]
+size = Vector2(400, 34)
+[sub_resource type="RectangleShape2D" id="Floor7"]
+size = Vector2(650, 34)
+[sub_resource type="StyleBoxFlat" id="Track"]
+bg_color = Color(0.17, 0.21, 0.26, 0.8)
+[sub_resource type="StyleBoxFlat" id="Fill"]
+bg_color = Color(0.61, 0.52, 0.75, 1)
+[sub_resource type="StyleBoxFlat" id="SuitFill"]
+bg_color = Color(0.44, 0.77, 0.64, 1)
+[sub_resource type="StyleBoxFlat" id="BossFill"]
+bg_color = Color(0.82, 0.46, 0.57, 1)
+
+[node name="LowerTransitSector" type="Node2D"]
+script = ExtResource("1")
+
+[node name="Sky" type="Parallax2D" parent="."]
+scroll_scale = Vector2(0.05, 1)
+[node name="Art" type="Sprite2D" parent="Sky"]
+texture = ExtResource("2")
+centered = false
+
+[node name="FarSkyline" type="Parallax2D" parent="."]
+scroll_scale = Vector2(0.15, 1)
+[node name="Art" type="Sprite2D" parent="FarSkyline"]
+texture = ExtResource("3")
+centered = false
+
+[node name="ResidentialTowers" type="Parallax2D" parent="."]
+scroll_scale = Vector2(0.35, 1)
+[node name="Art" type="Sprite2D" parent="ResidentialTowers"]
+texture = ExtResource("4")
+centered = false
+
+[node name="RailInfrastructure" type="Parallax2D" parent="."]
+scroll_scale = Vector2(0.6, 1)
+[node name="Art" type="Sprite2D" parent="RailInfrastructure"]
+texture = ExtResource("5")
+centered = false
+
+[node name="TransitStructures" type="Sprite2D" parent="."]
+texture = ExtResource("6")
+centered = false
+
+[node name="Machinery" type="Node2D" parent="."]
+script = ExtResource("8")
+
+[node name="RoofAndCables" type="Sprite2D" parent="."]
+texture = ExtResource("7")
+centered = false
+
+[node name="WalkableSurfaces" type="StaticBody2D" parent="."]
+collision_layer = 1
+collision_mask = 0
+[node name="Entrance" type="CollisionShape2D" parent="WalkableSurfaces"]
+position = Vector2(380, 525)
+shape = SubResource("Floor1")
+[node name="RailService" type="CollisionShape2D" parent="WalkableSurfaces"]
+position = Vector2(1120, 489)
+shape = SubResource("Floor2")
+[node name="LiftLanding" type="CollisionShape2D" parent="WalkableSurfaces"]
+position = Vector2(1620, 509)
+shape = SubResource("Floor3")
+[node name="LowerCatwalk" type="CollisionShape2D" parent="WalkableSurfaces"]
+position = Vector2(2020, 552)
+shape = SubResource("Floor4")
+[node name="DiagnosticStation" type="CollisionShape2D" parent="WalkableSurfaces"]
+position = Vector2(2435, 515)
+shape = SubResource("Floor5")
+[node name="VentilationDeck" type="CollisionShape2D" parent="WalkableSurfaces"]
+position = Vector2(2900, 497)
+shape = SubResource("Floor6")
+[node name="EastExit" type="CollisionShape2D" parent="WalkableSurfaces"]
+position = Vector2(3515, 533)
+shape = SubResource("Floor7")
+
+[node name="WorldSigns" type="Node2D" parent="."]
+[node name="Entrance" type="Label" parent="WorldSigns"]
+offset_left = 95.0
+offset_top = 265.0
+offset_right = 300.0
+offset_bottom = 293.0
+theme_override_colors/font_color = Color(0.57, 0.63, 0.64, 1)
+theme_override_font_sizes/font_size = 23
+text = "TRANSIT / 09"
+[node name="EntranceSmall" type="Label" parent="WorldSigns"]
+offset_left = 96.0
+offset_top = 294.0
+theme_override_colors/font_color = Color(0.39, 0.47, 0.5, 1)
+theme_override_font_sizes/font_size = 11
+text = "NUR WARTUNGSPERSONAL"
+[node name="Lift" type="Label" parent="WorldSigns"]
+offset_left = 1520.0
+offset_top = 260.0
+theme_override_colors/font_color = Color(0.56, 0.58, 0.6, 1)
+theme_override_font_sizes/font_size = 23
+text = "AUFZUG 04"
+[node name="LiftSmall" type="Label" parent="WorldSigns"]
+offset_left = 1521.0
+offset_top = 292.0
+theme_override_colors/font_color = Color(0.63, 0.52, 0.37, 1)
+theme_override_font_sizes/font_size = 11
+text = "GESPERRT / ABSTURZGEFAHR"
+[node name="Ventilation" type="Label" parent="WorldSigns"]
+offset_left = 3060.0
+offset_top = 123.0
+theme_override_colors/font_color = Color(0.55, 0.62, 0.63, 1)
+theme_override_font_sizes/font_size = 25
+text = "LUFTWERK / 03"
+[node name="VentilationSmall" type="Label" parent="WorldSigns"]
+offset_left = 3061.0
+offset_top = 157.0
+theme_override_colors/font_color = Color(0.43, 0.48, 0.53, 1)
+theme_override_font_sizes/font_size = 11
+text = "DRUCKABFALL  ·  FERNWARTUNG AKTIV"
+
+[node name="Camera2D" type="Camera2D" parent="."]
+position = Vector2(640, 360)
+process_callback = 0
+
+[node name="Player" parent="." instance=ExtResource("10")]
+position = Vector2(160, 507)
+
+[node name="Combat" type="Node2D" parent="."]
+script = ExtResource("11")
+
+[node name="Exit" type="Label" parent="WorldSigns"]
+offset_left = 3610.0
+offset_top = 385.0
+theme_override_colors/font_color = Color(0.78, 0.69, 0.95, 1)
+theme_override_font_sizes/font_size = 18
+text = "AUSGANG →"
+
+[node name="Atmosphere" type="CanvasLayer" parent="."]
+layer = 2
+[node name="Overlay" type="ColorRect" parent="Atmosphere"]
+material = SubResource("AtmosphereMaterial")
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+mouse_filter = 2
+
+[node name="HUD" type="CanvasLayer" parent="."]
+layer = 3
+[node name="Chapter" type="Label" parent="HUD"]
+offset_left = 40.0
+offset_top = 93.0
+theme_override_colors/font_color = Color(0.65, 0.56, 0.79, 1)
+theme_override_font_sizes/font_size = 12
+text = "ITERATION 03     /     SIGNAL INFESTATION"
+[node name="Title" type="Label" parent="HUD"]
+offset_left = 38.0
+offset_top = 113.0
+theme_override_colors/font_color = Color(0.82, 0.85, 0.85, 1)
+theme_override_colors/font_shadow_color = Color(0.025, 0.04, 0.055, 0.8)
+theme_override_constants/shadow_offset_y = 2
+theme_override_font_sizes/font_size = 32
+text = "Unterer Transit­sektor"
+[node name="Subtitle" type="Label" parent="HUD"]
+offset_left = 40.0
+offset_top = 158.0
+theme_override_colors/font_color = Color(0.55, 0.63, 0.67, 1)
+theme_override_font_sizes/font_size = 13
+text = "Die letzte Verbindung liegt unter der Stadt."
+[node name="Telemetry" type="Label" parent="HUD"]
+offset_left = 925.0
+offset_top = 102.0
+offset_right = 1240.0
+offset_bottom = 162.0
+theme_override_colors/font_color = Color(0.55, 0.61, 0.65, 1)
+theme_override_font_sizes/font_size = 11
+theme_override_constants/line_spacing = 6
+horizontal_alignment = 2
+text = "MAGNETBAHN / AUSSER BETRIEB"
+
+[node name="Bottom" type="Control" parent="HUD"]
+anchors_preset = 12
+anchor_top = 1.0
+anchor_right = 1.0
+anchor_bottom = 1.0
+offset_top = -66.0
+grow_horizontal = 2
+grow_vertical = 0
+mouse_filter = 2
+[node name="Shade" type="ColorRect" parent="HUD/Bottom"]
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+mouse_filter = 2
+color = Color(0.028, 0.044, 0.064, 0.83)
+[node name="Location" type="Label" parent="HUD/Bottom"]
+offset_left = 40.0
+offset_top = 12.0
+theme_override_colors/font_color = Color(0.74, 0.78, 0.8, 1)
+theme_override_font_sizes/font_size = 12
+text = "01 / WARTUNGSZUGANG"
+[node name="Progress" type="ProgressBar" parent="HUD/Bottom"]
+offset_left = 40.0
+offset_top = 39.0
+offset_right = 311.0
+offset_bottom = 41.0
+mouse_filter = 2
+theme_override_styles/background = SubResource("Track")
+theme_override_styles/fill = SubResource("Fill")
+show_percentage = false
+[node name="Controls" type="Label" parent="HUD/Bottom"]
+offset_left = 375.0
+offset_top = 23.0
+offset_right = 1240.0
+theme_override_colors/font_color = Color(0.62, 0.68, 0.72, 1)
+theme_override_font_sizes/font_size = 12
+horizontal_alignment = 2
+text = "A/D  ←/→  Laufen    Space/W/↑  Springen    Maus/J  Feuer    Esc  Pause    R  Neustart    M  Ton"
+
+[node name="Suit" type="Control" parent="HUD"]
+offset_left = 40.0
+offset_top = 195.0
+offset_right = 275.0
+offset_bottom = 235.0
+mouse_filter = 2
+[node name="Label" type="Label" parent="HUD/Suit"]
+theme_override_colors/font_color = Color(0.70, 0.85, 0.77, 1)
+theme_override_font_sizes/font_size = 12
+text = "ANZUG  6 / 6"
+[node name="Value" type="ProgressBar" parent="HUD/Suit"]
+offset_top = 23.0
+offset_right = 216.0
+offset_bottom = 30.0
+theme_override_styles/background = SubResource("Track")
+theme_override_styles/fill = SubResource("SuitFill")
+max_value = 6.0
+value = 6.0
+show_percentage = false
+mouse_filter = 2
+
+[node name="Boss" type="Control" parent="HUD"]
+visible = false
+offset_left = 420.0
+offset_top = 204.0
+offset_right = 860.0
+offset_bottom = 250.0
+mouse_filter = 2
+[node name="Label" type="Label" parent="HUD/Boss"]
+offset_right = 440.0
+theme_override_colors/font_color = Color(0.89, 0.68, 0.75, 1)
+theme_override_font_sizes/font_size = 13
+horizontal_alignment = 1
+text = "NULLKANTOR / TRÄGERSIGNAL"
+[node name="Value" type="ProgressBar" parent="HUD/Boss"]
+offset_top = 25.0
+offset_right = 440.0
+offset_bottom = 31.0
+theme_override_styles/background = SubResource("Track")
+theme_override_styles/fill = SubResource("BossFill")
+max_value = 24.0
+value = 24.0
+show_percentage = false
+mouse_filter = 2
+
+[node name="Outcome" type="Control" parent="HUD"]
+visible = false
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+[node name="Shade" type="ColorRect" parent="HUD/Outcome"]
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+color = Color(0.025, 0.035, 0.055, 0.85)
+[node name="Panel" type="Control" parent="HUD/Outcome"]
+offset_left = 400.0
+offset_top = 245.0
+offset_right = 880.0
+offset_bottom = 515.0
+[node name="Heading" type="Label" parent="HUD/Outcome/Panel"]
+offset_right = 480.0
+theme_override_colors/font_color = Color(0.84, 0.76, 0.95, 1)
+theme_override_font_sizes/font_size = 32
+horizontal_alignment = 1
+text = "PAUSE"
+[node name="Detail" type="Label" parent="HUD/Outcome/Panel"]
+offset_top = 60.0
+offset_right = 480.0
+theme_override_font_sizes/font_size = 17
+horizontal_alignment = 1
+text = "Esc: fortsetzen"
+[node name="Resume" type="Button" parent="HUD/Outcome/Panel"]
+offset_left = 100.0
+offset_top = 130.0
+offset_right = 380.0
+offset_bottom = 174.0
+theme_override_font_sizes/font_size = 18
+text = "Fortsetzen"
+[node name="Restart" type="Button" parent="HUD/Outcome/Panel"]
+offset_left = 100.0
+offset_top = 190.0
+offset_right = 380.0
+offset_bottom = 234.0
+theme_override_font_sizes/font_size = 18
+text = "Neuer Versuch"
