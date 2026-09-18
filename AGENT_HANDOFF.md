@@ -1,5 +1,21 @@
 # Agent-Übergabe
 
+## Deploy + GitHub-Push (18.09.)
+
+- Website live (anonym, 24h): https://orchid-mirage-rpab.here.now/ – Bundle via
+  neuem `website/build-deploy.sh` nach `build/website-deploy/` gebaut (alle
+  ../-Links auf mitkopierte Dateien umgeschrieben, per curl verifiziert).
+  Claim-URL zum dauerhaften Übernehmen beachten (nur einmal sichtbar).
+- `README.md` mit Spiel-Screenshot (`docs/images/signal-infestation-*.png`)
+  und Website-Link aufgewertet; `*Zone.Identifier` ins `.gitignore`.
+- Commit `bc65abb` (248 Dateien: Iterationen, Website, Docs, Export-Skript,
+  Game-Quellen; ohne `.env`, `dist/`, Tool-Junk). **Push offen:**
+  `git@github.com: Permission denied (publickey)` – Public Key
+  (`~/.ssh/id_rsa.pub`, Fingerprint siehe Handoff-Anhang) fehlt auf GitHub
+  oder Repo `ice09/agent-gamedev` existiert nicht. Nichts davon ohne
+  Nutzeraktion behebbar. Danach: `git push origin HEAD`.
+- Unstaged/wissentlich draußen: Löschung `opencode.json`, `.playwright-mcp/`.
+
 ## Begleit-Website (neu)
 
 - Neu `website/` (deutsch): Anleitung von WSL/Windows-Setup bis 1. Iteration,
